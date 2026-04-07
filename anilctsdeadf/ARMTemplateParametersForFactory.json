@@ -17,6 +17,9 @@
 		"AzureSqlDatabase1_password": {
 			"value": ""
 		},
+		"FileServer1_password": {
+			"value": ""
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"value": "https://anictsdeadls.dfs.core.windows.net/"
 		},
@@ -34,6 +37,12 @@
 		},
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"value": "aniladmin"
+		},
+		"FileServer1_properties_typeProperties_host": {
+			"value": "C:\\ADFfiles"
+		},
+		"FileServer1_properties_typeProperties_userId": {
+			"value": "admin"
 		}
 	}
 }

@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'AzureSqlDatabase1'"
 		},
+		"FileServer1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'FileServer1'"
+		},
 		"AzureDataLakeStorage1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://anictsdeadls.dfs.core.windows.net/"
@@ -46,6 +50,14 @@
 		"AzureSqlDatabase1_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "aniladmin"
+		},
+		"FileServer1_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "C:\\ADFfiles"
+		},
+		"FileServer1_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "admin"
 		}
 	},
 	"variables": {
@@ -108,6 +120,7 @@
 								"value": "@activity('Get Metadata1').output.childItems",
 								"type": "Expression"
 							},
+							"isSequential": false,
 							"activities": [
 								{
 									"name": "Switch1",
@@ -189,8 +202,8 @@
 														]
 													},
 													{
-														"name": "Get Metadata2",
-														"type": "GetMetadata",
+														"name": "Append variable1",
+														"type": "AppendVariable",
 														"dependsOn": [
 															{
 																"activity": "Copy data1",
@@ -199,39 +212,21 @@
 																]
 															}
 														],
-														"policy": {
-															"timeout": "0.12:00:00",
-															"retry": 0,
-															"retryIntervalInSeconds": 30,
-															"secureOutput": false,
-															"secureInput": false
-														},
 														"userProperties": [],
 														"typeProperties": {
-															"dataset": {
-																"referenceName": "DelimitedText3",
-																"type": "DatasetReference",
-																"parameters": {}
-															},
-															"fieldList": [
-																"childItems"
-															],
-															"storeSettings": {
-																"type": "AzureBlobFSReadSettings",
-																"recursive": true,
-																"enablePartitionDiscovery": false
-															},
-															"formatSettings": {
-																"type": "DelimitedTextReadSettings"
+															"variableName": "txtapp",
+															"value": {
+																"value": "@item().name",
+																"type": "Expression"
 															}
 														}
 													},
 													{
-														"name": "Set variable1",
+														"name": "Set variable3",
 														"type": "SetVariable",
 														"dependsOn": [
 															{
-																"activity": "Get Metadata2",
+																"activity": "Append variable1",
 																"dependencyConditions": [
 																	"Succeeded"
 																]
@@ -243,9 +238,9 @@
 														},
 														"userProperties": [],
 														"typeProperties": {
-															"variableName": "txt",
+															"variableName": "txtcount",
 															"value": {
-																"value": "@length(activity('Get Metadata2').output.childItems)",
+																"value": "@length(variables('txtapp'))",
 																"type": "Expression"
 															}
 														}
@@ -321,8 +316,8 @@
 														]
 													},
 													{
-														"name": "Get Metadata3",
-														"type": "GetMetadata",
+														"name": "Append variable2",
+														"type": "AppendVariable",
 														"dependsOn": [
 															{
 																"activity": "Copy data2",
@@ -331,39 +326,21 @@
 																]
 															}
 														],
-														"policy": {
-															"timeout": "0.12:00:00",
-															"retry": 0,
-															"retryIntervalInSeconds": 30,
-															"secureOutput": false,
-															"secureInput": false
-														},
 														"userProperties": [],
 														"typeProperties": {
-															"dataset": {
-																"referenceName": "DelimitedText2",
-																"type": "DatasetReference",
-																"parameters": {}
-															},
-															"fieldList": [
-																"childItems"
-															],
-															"storeSettings": {
-																"type": "AzureBlobFSReadSettings",
-																"recursive": true,
-																"enablePartitionDiscovery": false
-															},
-															"formatSettings": {
-																"type": "DelimitedTextReadSettings"
+															"variableName": "csvapp",
+															"value": {
+																"value": "@item().name",
+																"type": "Expression"
 															}
 														}
 													},
 													{
-														"name": "Set variable2",
+														"name": "Set variable4",
 														"type": "SetVariable",
 														"dependsOn": [
 															{
-																"activity": "Get Metadata3",
+																"activity": "Append variable2",
 																"dependencyConditions": [
 																	"Succeeded"
 																]
@@ -375,9 +352,9 @@
 														},
 														"userProperties": [],
 														"typeProperties": {
-															"variableName": "csv",
+															"variableName": "csvcount",
 															"value": {
-																"value": "@length(activity('Get Metadata3').output.childItems)",
+																"value": "@length(variables('csvapp'))",
 																"type": "Expression"
 															}
 														}
@@ -386,6 +363,75 @@
 											}
 										]
 									}
+								},
+								{
+									"name": "Copy data5",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Switch1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"additionalColumns": [
+												{
+													"name": "txtcount",
+													"value": "@length(variables('txtapp'))"
+												},
+												{
+													"name": "csvcount",
+													"value": "@length(variables('csvapp'))"
+												}
+											],
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "Json1",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DelimitedText32",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
 								}
 							]
 						}
@@ -395,10 +441,16 @@
 					"elapsedTimeMetric": {}
 				},
 				"variables": {
-					"csv": {
+					"txtapp": {
+						"type": "Array"
+					},
+					"txtcount": {
 						"type": "Integer"
 					},
-					"txt": {
+					"csvapp": {
+						"type": "Array"
+					},
+					"csvcount": {
 						"type": "Integer"
 					}
 				},
@@ -407,6 +459,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]",
+				"[concat(variables('factoryId'), '/datasets/Json1')]",
+				"[concat(variables('factoryId'), '/datasets/DelimitedText32')]",
 				"[concat(variables('factoryId'), '/datasets/DelimitedText3')]",
 				"[concat(variables('factoryId'), '/datasets/DelimitedText2')]"
 			]
@@ -616,6 +670,67 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText11')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().filename",
+							"type": "Expression"
+						},
+						"fileSystem": "input"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "description",
+						"type": "String"
+					},
+					{
+						"name": "industry",
+						"type": "String"
+					},
+					{
+						"name": "level",
+						"type": "String"
+					},
+					{
+						"name": "size",
+						"type": "String"
+					},
+					{
+						"name": "line_code",
+						"type": "String"
+					},
+					{
+						"name": "value",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -643,7 +758,61 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText21')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "output1"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText3')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "output2"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText31')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -808,6 +977,110 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FileServer1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('FileServer1_properties_typeProperties_host')]",
+					"userId": "[parameters('FileServer1_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('FileServer1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SelfHostedIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {
+					"selfContainedInteractiveAuthoringEnabled": true
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText32')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "filecountdetails.csv",
+						"fileSystem": "outputcount"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "Game Number",
+						"type": "String"
+					},
+					{
+						"name": " \"Game Length\"",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStorage1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "sample1.json",
+						"fileSystem": "input"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"fruit": {
+							"type": "string"
+						},
+						"size": {
+							"type": "string"
+						},
+						"color": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage1')]"
+			]
 		}
 	]
 }
