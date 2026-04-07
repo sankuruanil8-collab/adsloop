@@ -52,6 +52,7 @@
 						"value": "@activity('Get Metadata1').output.childItems",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "Switch1",
@@ -132,8 +133,8 @@
 												]
 											},
 											{
-												"name": "Get Metadata2",
-												"type": "GetMetadata",
+												"name": "Append variable1",
+												"type": "AppendVariable",
 												"dependsOn": [
 													{
 														"activity": "Copy data1",
@@ -142,38 +143,21 @@
 														]
 													}
 												],
-												"policy": {
-													"timeout": "0.12:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
 												"userProperties": [],
 												"typeProperties": {
-													"dataset": {
-														"referenceName": "DelimitedText3",
-														"type": "DatasetReference"
-													},
-													"fieldList": [
-														"childItems"
-													],
-													"storeSettings": {
-														"type": "AzureBlobFSReadSettings",
-														"recursive": true,
-														"enablePartitionDiscovery": false
-													},
-													"formatSettings": {
-														"type": "DelimitedTextReadSettings"
+													"variableName": "txtapp",
+													"value": {
+														"value": "@item().name",
+														"type": "Expression"
 													}
 												}
 											},
 											{
-												"name": "Set variable1",
+												"name": "Set variable3",
 												"type": "SetVariable",
 												"dependsOn": [
 													{
-														"activity": "Get Metadata2",
+														"activity": "Append variable1",
 														"dependencyConditions": [
 															"Succeeded"
 														]
@@ -185,9 +169,9 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"variableName": "txt",
+													"variableName": "txtcount",
 													"value": {
-														"value": "@length(activity('Get Metadata2').output.childItems)",
+														"value": "@length(variables('txtapp'))",
 														"type": "Expression"
 													}
 												}
@@ -262,8 +246,8 @@
 												]
 											},
 											{
-												"name": "Get Metadata3",
-												"type": "GetMetadata",
+												"name": "Append variable2",
+												"type": "AppendVariable",
 												"dependsOn": [
 													{
 														"activity": "Copy data2",
@@ -272,38 +256,21 @@
 														]
 													}
 												],
-												"policy": {
-													"timeout": "0.12:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
 												"userProperties": [],
 												"typeProperties": {
-													"dataset": {
-														"referenceName": "DelimitedText2",
-														"type": "DatasetReference"
-													},
-													"fieldList": [
-														"childItems"
-													],
-													"storeSettings": {
-														"type": "AzureBlobFSReadSettings",
-														"recursive": true,
-														"enablePartitionDiscovery": false
-													},
-													"formatSettings": {
-														"type": "DelimitedTextReadSettings"
+													"variableName": "csvapp",
+													"value": {
+														"value": "@item().name",
+														"type": "Expression"
 													}
 												}
 											},
 											{
-												"name": "Set variable2",
+												"name": "Set variable4",
 												"type": "SetVariable",
 												"dependsOn": [
 													{
-														"activity": "Get Metadata3",
+														"activity": "Append variable2",
 														"dependencyConditions": [
 															"Succeeded"
 														]
@@ -315,9 +282,9 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"variableName": "csv",
+													"variableName": "csvcount",
 													"value": {
-														"value": "@length(activity('Get Metadata3').output.childItems)",
+														"value": "@length(variables('csvapp'))",
 														"type": "Expression"
 													}
 												}
@@ -326,16 +293,89 @@
 									}
 								]
 							}
+						},
+						{
+							"name": "Copy data5",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "Switch1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"additionalColumns": [
+										{
+											"name": "txtcount",
+											"value": "@length(variables('txtapp'))"
+										},
+										{
+											"name": "csvcount",
+											"value": "@length(variables('csvapp'))"
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobFSReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "Json1",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DelimitedText32",
+									"type": "DatasetReference"
+								}
+							]
 						}
 					]
 				}
 			}
 		],
 		"variables": {
-			"csv": {
+			"txtapp": {
+				"type": "Array"
+			},
+			"txtcount": {
 				"type": "Integer"
 			},
-			"txt": {
+			"csvapp": {
+				"type": "Array"
+			},
+			"csvcount": {
 				"type": "Integer"
 			}
 		},
