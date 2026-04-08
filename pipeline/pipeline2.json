@@ -52,7 +52,8 @@
 						"value": "@activity('Get Metadata1').output.childItems",
 						"type": "Expression"
 					},
-					"isSequential": true,
+					"isSequential": false,
+					"batchCount": 1,
 					"activities": [
 						{
 							"name": "Switch1",
@@ -319,11 +320,17 @@
 									"additionalColumns": [
 										{
 											"name": "txtcount",
-											"value": "@length(variables('txtapp'))"
+											"value": {
+												"value": "@length(variables('txtapp'))",
+												"type": "Expression"
+											}
 										},
 										{
 											"name": "csvcount",
-											"value": "@length(variables('csvapp'))"
+											"value": {
+												"value": "@length(variables('csvapp'))",
+												"type": "Expression"
+											}
 										}
 									],
 									"storeSettings": {
@@ -357,7 +364,13 @@
 							"outputs": [
 								{
 									"referenceName": "DelimitedText32",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"filename": {
+											"value": "@concat(variables('filecount'),'.csv')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
@@ -376,6 +389,9 @@
 				"type": "Array"
 			},
 			"csvcount": {
+				"type": "Integer"
+			},
+			"filecount": {
 				"type": "Integer"
 			}
 		},
