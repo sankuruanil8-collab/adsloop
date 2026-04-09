@@ -369,6 +369,10 @@
 										"filename": {
 											"value": "@concat(variables('filecount'),'.csv')",
 											"type": "Expression"
+										},
+										"containerName": {
+											"value": "mycontainer",
+											"type": "Expression"
 										}
 									}
 								}

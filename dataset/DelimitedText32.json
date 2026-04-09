@@ -8,6 +8,9 @@
 		"parameters": {
 			"filename": {
 				"type": "string"
+			},
+			"containerName": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -16,10 +19,10 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@dataset().filename",
+					"value": "@dataset().containerName",
 					"type": "Expression"
 				},
-				"fileSystem": "outputcount"
+				"fileSystem": "@dataset().ContainerName"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
