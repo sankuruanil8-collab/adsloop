@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText32",
+	"name": "Sourcedatasetparametereized",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",
@@ -8,9 +8,6 @@
 		"parameters": {
 			"filename": {
 				"type": "string"
-			},
-			"containerName": {
-				"type": "string"
 			}
 		},
 		"annotations": [],
@@ -18,8 +15,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "transferredfilecountdetails",
-				"fileSystem": "@dataset().ContainerName"
+				"fileName": {
+					"value": "@dataset().filename",
+					"type": "Expression"
+				},
+				"fileSystem": "input"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -28,11 +28,23 @@
 		},
 		"schema": [
 			{
-				"name": "Game Number",
+				"name": "firstName",
 				"type": "String"
 			},
 			{
-				"name": " \"Game Length\"",
+				"name": "lastName",
+				"type": "String"
+			},
+			{
+				"name": "gender",
+				"type": "String"
+			},
+			{
+				"name": "age",
+				"type": "String"
+			},
+			{
+				"name": "count",
 				"type": "String"
 			}
 		]

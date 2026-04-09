@@ -1,15 +1,12 @@
 {
-	"name": "DelimitedText32",
+	"name": "Sinkdatasetparameterized",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureDataLakeStorage1",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"filename": {
-				"type": "string"
-			},
-			"containerName": {
+			"TargetContainerParameter": {
 				"type": "string"
 			}
 		},
@@ -18,23 +15,16 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileName": "transferredfilecountdetails",
-				"fileSystem": "@dataset().ContainerName"
+				"fileSystem": {
+					"value": "@dataset().TargetContainerParameter",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "Game Number",
-				"type": "String"
-			},
-			{
-				"name": " \"Game Length\"",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }

@@ -367,7 +367,7 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"filename": {
-											"value": "@concat(variables('filecount'),'.csv')",
+											"value": "@concat(variables('filecount'),'transferredfilecountdetails.csv')",
 											"type": "Expression"
 										},
 										"containerName": {
