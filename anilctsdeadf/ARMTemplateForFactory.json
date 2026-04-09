@@ -440,6 +440,10 @@
 												"filename": {
 													"value": "@concat(variables('filecount'),'.csv')",
 													"type": "Expression"
+												},
+												"containerName": {
+													"value": "mycontainer",
+													"type": "Expression"
 												}
 											}
 										}
@@ -750,6 +754,9 @@
 				"parameters": {
 					"filename": {
 						"type": "string"
+					},
+					"containerName": {
+						"type": "string"
 					}
 				},
 				"annotations": [],
@@ -758,10 +765,10 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": {
-							"value": "@dataset().filename",
+							"value": "@dataset().containerName",
 							"type": "Expression"
 						},
-						"fileSystem": "outputcount"
+						"fileSystem": "@dataset().ContainerName"
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
