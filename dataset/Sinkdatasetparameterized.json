@@ -8,6 +8,9 @@
 		"parameters": {
 			"TargetContainerParameter": {
 				"type": "string"
+			},
+			"filename": {
+				"type": "string"
 			}
 		},
 		"annotations": [],
