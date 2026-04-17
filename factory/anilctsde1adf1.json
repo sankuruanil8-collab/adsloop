@@ -1,5 +1,13 @@
 {
 	"name": "anilctsde1adf1",
+	"properties": {
+		"globalParameters": {
+			"globalpara": {
+				"type": "string",
+				"value": "fortest1"
+			}
+		}
+	},
 	"location": "eastus",
 	"identity": {
 		"type": "SystemAssigned",
