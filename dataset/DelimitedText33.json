@@ -1,0 +1,44 @@
+{
+	"name": "DelimitedText33",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage4",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "emp.CSV",
+				"fileSystem": "input"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "id",
+				"type": "String"
+			},
+			{
+				"name": "ename",
+				"type": "String"
+			},
+			{
+				"name": "esal",
+				"type": "String"
+			},
+			{
+				"name": "Deptid",
+				"type": "String"
+			},
+			{
+				"name": "gender",
+				"type": "String"
+			}
+		]
+	}
+}
