@@ -1,0 +1,23 @@
+{
+	"name": "AzureSqlDatabase4",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"server": "anilctsde1sqlserver.database.windows.net",
+			"database": "anilctsde1sqldb",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "aniladmin",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "mysqlsecret"
+			}
+		}
+	}
+}
