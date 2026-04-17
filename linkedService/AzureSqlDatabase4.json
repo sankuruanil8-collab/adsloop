@@ -16,7 +16,8 @@
 					"referenceName": "AzureKeyVault1",
 					"type": "LinkedServiceReference"
 				},
-				"secretName": "mysqlsecret"
+				"secretName": "mysqlsecret",
+				"secretVersion": "b5bfc434af0e4a16a1d8f3d01b0f42d8"
 			}
 		}
 	}
